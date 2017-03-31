@@ -1,0 +1,57 @@
+.TH DHCP-STATS 1 2016-10-11 
+.SH NAME
+dhcp-stats \- monitor DHCP communication and show the statistics about traffic
+.SH SYNOPSIS
+.B dhcp-stats 
+.IR ip-prefix 
+[ 
+.IR ip-prefix
+[ ... ] ] 
+
+.B dhcp-stats --help | -h
+.SH DESCRIPTION
+.B dhcp-stats
+monitor DHCP communication and show statistics about use of network prefixes 
+in text-based user interfaces in a terminal. 
+Program is useful for cases that DHCP server does not logs information 
+about network addresses which are allocated for clients. 
+
+The error messages are printed in stardart error output.
+
+The functionality is achieved 
+by analyzing BOOTP protocol. To be more specific, by DHCPACK and DHCPRELEASE messages. 
+.SH OPTIONS
+.TP
+.IR ip-prefix
+ Define IP network in CIDR format. It is allowed to insert more network prefixes as input arguments and also they can be overlapping.
+.TP
+.BR --help
+ Output a usage message and exit.
+
+.SH EXIT STATUS
+If program exits in normal succesfull way, the exits status is 0.
+Exit status 1 indicates error in parsing input arguments.
+Exit status 2 indicates error in creating socket or network connection error.
+
+.SH IMPLEMENTATION
+Program use for sniffering traffic promiscuous mode. Program sniff every packet and then filter only UDP messeges on 67 or 68 port.
+
+The functionality is achieved by analyzing BOOTP protocol. To be more specific, by DHCPACK and DHCPRELEASE messages. The incoming or outcomming DHCP messages are need to
+be parsed. First program parse the type of DHCP message and then CIADDR in case of DHCPRELEASE or YIADDR in case of DHCPACK. The last important information is lease time in case
+of DHCPACK. For more information about BOOTP and DHCP protocols, please visit RFC2131 and RFC2132.
+
+
+.SH BUGS
+With this program it is possible to make statistics only from time when the program started. To get proper statistics it is necessary to run program for least at time which
+is defined by lease time of DHCP server.
+
+Program expected that every DHCP messages from servers are resend to it.
+
+Program  require superuser privileges becouse of use promiscuous mode.
+
+.SH EXAMPLE
+Standart use of program. Makes statistics about IP prefixes bellow: 
+
+dhcp-stats 192.168.1.0/24 192.168.128.0/22
+ 	
+
